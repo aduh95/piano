@@ -1,0 +1,34 @@
+body {
+  display: flex;
+  margin: 0;
+  max-height: 100vh;
+  max-width: 100vw;
+  overflow-x: hidden;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-direction: column;
+}
+
+#piano {
+  --white-keys-size: 24mm;
+  --black-keys-size: 10mm;
+  position: relative;
+  overflow-x: scroll;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+button {
+  width: var(--white-keys-size);
+  height: 50vh;
+  background-color: #fff;
+}
+
+button.sharp {
+  position: absolute;
+  height: 60%;
+  width: var(--black-keys-size);
+  background-color: #000;
+  color: #fff;
+  transform: translateX(-50%);
+}
