@@ -27,7 +27,49 @@ for (let octavePitch = 1; octavePitch < 8; octavePitch++) {
   piano.append(...createOctaveKeys(octavePitch));
 }
 
-document.body.append(piano);
+const pianoMinimap = document.createElement("input");
+pianoMinimap.type = "range";
+pianoMinimap.min = 0;
+function updateMinimapRange() {
+  const { value, max } = pianoMinimap;
+  const { offsetWidth, scrollLeft, scrollWidth } = piano;
+  if (max !== scrollWidth - offsetWidth) {
+    pianoMinimap.max = scrollWidth - offsetWidth;
+    pianoMinimap.value = ((value / max) * pianoMinimap.max) | 0;
+    pianoMinimap.style.setProperty(
+      "--visible-ratio",
+      (offsetWidth / scrollWidth) * 100 + "%"
+    );
+    pianoMinimap.value =
+      ((scrollLeft + offsetWidth / 2) / scrollWidth) * pianoMinimap.max;
+  }
+}
+pianoMinimap.addEventListener(
+  "input",
+  () => {
+    piano.scrollLeft = Number(pianoMinimap.value) | 0;
+  },
+  { passive: true }
+);
+pianoMinimap.addEventListener("keydown", event => {
+  if (event.code.startsWith("Arrow")) {
+    const { value, max } = pianoMinimap;
+    const { offsetWidth, scrollWidth } = piano;
+    pianoMinimap.step = Math.min(
+      (event.code === "ArrowUp" || event.code === "ArrowRight"
+        ? max - value
+        : value) || 1,
+      pianoMinimap.max * (offsetWidth / scrollWidth)
+    );
+  }
+});
+pianoMinimap.addEventListener("keyup", () => {
+  pianoMinimap.step = 1;
+});
+addEventListener("resize", updateMinimapRange, { passive: true });
+requestAnimationFrame(updateMinimapRange);
+
+document.body.append(piano, pianoMinimap);
 if (typeof Element.prototype.scrollIntoView === "function") {
   requestAnimationFrame(() =>
     document.querySelector("[autofocus]").scrollIntoView({

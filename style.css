@@ -13,7 +13,7 @@ body {
   --white-keys-size: 24mm;
   --black-keys-size: 10mm;
   position: relative;
-  overflow-x: scroll;
+  overflow: hidden;
   white-space: nowrap;
   max-width: 100%;
 }
