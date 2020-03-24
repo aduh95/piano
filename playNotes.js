@@ -1,26 +1,35 @@
-const playingNotes = new WeakSet();
+const PASSIVE = { passive: true };
+const playingNotes = new Set();
 
-function handlePointerMovements(e) {
-  if (!playingNotes.has(e.target)) {
-    playingNotes.add(e.target);
+const triggerReleaseCache = new WeakMap();
+function triggerRelease() {
+  this.removeEventListener("pointerout", triggerReleaseCache.get(this));
+  getSynth().then(synth => synth.triggerRelease(this.textContent));
+  playingNotes.delete(this);
+}
+
+function triggerAttack() {
+  if (!playingNotes.has(this)) {
+    playingNotes.add(this);
     getSynth()
       .then(synth => {
         synth.triggerAttack(this.textContent);
-        e.target.focus();
-        e.target.addEventListener(
+        this.focus();
+        this.addEventListener(
           "pointerout",
-          () => {
-            synth.triggerRelease(this.textContent);
-            playingNotes.delete(e.target);
-          },
-          {
-            passive: true,
-            once: true,
-          }
+          triggerReleaseCache.get(this),
+          PASSIVE
         );
       })
       .catch(console.error);
+    if (!triggerReleaseCache.has(this)) {
+      triggerReleaseCache.set(this, triggerRelease.bind(this));
+    }
   }
+}
+
+function handlePointerMovements(e) {
+  triggerAttack.call(e.target);
 }
 
 let synth;
@@ -45,7 +54,6 @@ export function clickHandler() {
 }
 
 export function addEventListeners(piano) {
-  const PASSIVE = { passive: true };
   function monitorPointerMovements() {
     piano.addEventListener("pointermove", handlePointerMovements, PASSIVE);
     piano.addEventListener(
@@ -66,6 +74,7 @@ export function addEventListeners(piano) {
     piano.removeEventListener("pointerleave", deactivatePointerMonitoring);
     piano.removeEventListener("pointerup", deactivatePointerMonitoring);
     piano.removeEventListener("pointercancel", deactivatePointerMonitoring);
+    playingNotes.forEach(Function.prototype.call.bind(triggerRelease));
   }
 
   piano.addEventListener("pointerdown", monitorPointerMovements, PASSIVE);
