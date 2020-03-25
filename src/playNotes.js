@@ -1,3 +1,5 @@
+import { PolySynth, start } from "tone";
+
 const PASSIVE = { passive: true };
 const playingNotes = new Set();
 
@@ -35,10 +37,7 @@ function handlePointerMovements(e) {
 let synth;
 const getSynth = () => {
   if (synth == null) {
-    synth = import("https://dev.jspm.io/tone@14").then(async Tone => {
-      await Tone.default.start();
-      return new Tone.default.PolySynth().toDestination();
-    });
+    synth = start().then(() => new PolySynth().toDestination());
   }
   return synth;
 };
