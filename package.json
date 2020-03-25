@@ -1,12 +1,14 @@
 {
   "scripts": {
-    "build": "node build.mjs",
-    "serve": "python3 -m http.server -d dist/"
+    "build": "NODE_ENV=production node build.mjs",
+    "serve": "python3 -m http.server -d dist/",
+    "deploy": "gh-pages -d dist"
   },
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^7.1.1",
     "crass": "^0.12.3",
+    "gh-pages": "^2.2.0",
     "jsdom": "^16.2.1",
     "rollup": "^2.2.0",
     "rollup-plugin-terser": "^5.3.0",
