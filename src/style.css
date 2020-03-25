@@ -12,7 +12,7 @@ body {
 
 #piano {
   --white-keys-size: 24mm;
-  --black-keys-size: 10mm;
+  --black-keys-size: 12mm;
   position: relative;
   overflow: hidden;
   white-space: nowrap;

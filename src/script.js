@@ -28,6 +28,10 @@ for (let octavePitch = 1; octavePitch < 8; octavePitch++) {
 
 const pianoMinimap = document.createElement("input");
 pianoMinimap.accessKey = "s";
+pianoMinimap.setAttribute(
+  "aria-label",
+  "Choose which part of the piano you want visible."
+);
 pianoMinimap.type = "range";
 pianoMinimap.min = 0;
 function updateMinimapRange() {
