@@ -19,10 +19,18 @@ body {
   max-width: 100%;
 }
 
+#piano:focus {
+  outline: 1px solid currentColor;
+}
+
 button {
   width: var(--white-keys-size);
   height: 50vh;
   background-color: #fff;
+}
+
+button:focus {
+  outline: 1px solid currentColor;
 }
 
 button.sharp {

@@ -20,12 +20,14 @@ function* createOctaveKeys(octaveNumber) {
 
 const piano = document.createElement("main");
 piano.id = "piano";
+piano.tabIndex = "0";
 addEventListeners(piano);
 for (let octavePitch = 1; octavePitch < 8; octavePitch++) {
   piano.append(...createOctaveKeys(octavePitch));
 }
 
 const pianoMinimap = document.createElement("input");
+pianoMinimap.accessKey = "s";
 pianoMinimap.type = "range";
 pianoMinimap.min = 0;
 function updateMinimapRange() {
@@ -61,6 +63,14 @@ pianoMinimap.addEventListener("keydown", event => {
     );
   }
 });
+pianoMinimap.addEventListener(
+  "wheel",
+  e => {
+    pianoMinimap.value = Number(pianoMinimap.value) + e.deltaY;
+    piano.scrollLeft = Number(pianoMinimap.value) | 0;
+  },
+  { passive: true }
+);
 pianoMinimap.addEventListener("keyup", () => {
   pianoMinimap.step = 1;
 });
