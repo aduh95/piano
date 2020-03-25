@@ -79,7 +79,7 @@ pianoMinimap.addEventListener("keyup", () => {
   pianoMinimap.step = 1;
 });
 addEventListener("resize", updateMinimapRange, { passive: true });
-requestAnimationFrame(updateMinimapRange);
+requestAnimationFrame(() => requestAnimationFrame(updateMinimapRange));
 
 document.body.append(piano, pianoMinimap);
 if (typeof Element.prototype.scrollIntoView === "function") {
