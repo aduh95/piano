@@ -4,9 +4,11 @@ const PASSIVE = { passive: true };
 const playingNotes = new Set();
 
 function triggerRelease() {
-  this.removeEventListener("pointerout", triggerRelease);
   getSynth().then(synth => synth.triggerRelease(this.textContent));
-  playingNotes.delete(this);
+  this.removeEventListener("pointerout", triggerRelease);
+
+  // delaying the deletion to cancel pending click event
+  requestAnimationFrame(() => playingNotes.delete(this));
 }
 
 function triggerAttack() {
@@ -34,18 +36,18 @@ const getSynth = () => {
   return synth;
 };
 
-export function clickHandler() {
-  if (!playingNotes.has(this)) {
-    playingNotes.add(this);
+function clickHandler(e) {
+  if (!playingNotes.has(e.target)) {
+    playingNotes.add(e.target);
     getSynth()
-      .then(synth => synth.triggerAttackRelease(this.textContent, "8n"))
-      .then(() => playingNotes.delete(this))
+      .then(synth => synth.triggerAttackRelease(e.target.textContent, "8n"))
+      .then(() => playingNotes.delete(e.target))
       .catch(console.error);
   }
 }
 
 export function addEventListeners(piano) {
-  function monitorPointerMovements() {
+  function monitorPointerMovements(e) {
     piano.addEventListener("pointermove", handlePointerMovements, PASSIVE);
     piano.addEventListener(
       "pointerleave",
@@ -58,6 +60,8 @@ export function addEventListeners(piano) {
       deactivatePointerMonitoring,
       PASSIVE
     );
+
+    handlePointerMovements(e);
   }
 
   function deactivatePointerMonitoring(e) {
@@ -69,4 +73,5 @@ export function addEventListeners(piano) {
   }
 
   piano.addEventListener("pointerdown", monitorPointerMovements, PASSIVE);
+  piano.addEventListener("click", clickHandler, PASSIVE);
 }
