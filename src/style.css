@@ -17,6 +17,8 @@ body {
   overflow: hidden;
   white-space: nowrap;
   max-width: 100%;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #piano:focus {
@@ -27,6 +29,11 @@ button {
   width: var(--white-keys-size);
   height: 50vh;
   background-color: #fff;
+  border-style: outset;
+}
+
+button.pressed {
+  border-style: inset;
 }
 
 button:focus {

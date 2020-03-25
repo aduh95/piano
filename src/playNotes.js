@@ -2,18 +2,23 @@ import { PolySynth, start } from "tone";
 
 const PASSIVE = { passive: true };
 const playingNotes = new Set();
+const NOTE_BEING_PLAYED = "pressed";
 
 function triggerRelease() {
   getSynth().then(synth => synth.triggerRelease(this.textContent));
   this.removeEventListener("pointerout", triggerRelease);
+  this.classList.remove(NOTE_BEING_PLAYED);
 
   // delaying the deletion to cancel pending click event
-  requestAnimationFrame(() => playingNotes.delete(this));
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => playingNotes.delete(this))
+  );
 }
 
 function triggerAttack() {
   if (!playingNotes.has(this)) {
     playingNotes.add(this);
+    this.classList.add(NOTE_BEING_PLAYED);
     getSynth()
       .then(synth => {
         synth.triggerAttack(this.textContent);
@@ -25,6 +30,7 @@ function triggerAttack() {
 }
 
 function handlePointerMovements(e) {
+  e.preventDefault();
   triggerAttack.call(e.target);
 }
 
@@ -48,7 +54,7 @@ function clickHandler(e) {
 
 export function addEventListeners(piano) {
   function monitorPointerMovements(e) {
-    piano.addEventListener("pointermove", handlePointerMovements, PASSIVE);
+    piano.addEventListener("pointermove", handlePointerMovements);
     piano.addEventListener(
       "pointerleave",
       deactivatePointerMonitoring,
@@ -72,6 +78,6 @@ export function addEventListeners(piano) {
     playingNotes.forEach(Function.prototype.call.bind(triggerRelease));
   }
 
-  piano.addEventListener("pointerdown", monitorPointerMovements, PASSIVE);
+  piano.addEventListener("pointerdown", monitorPointerMovements);
   piano.addEventListener("click", clickHandler, PASSIVE);
 }
