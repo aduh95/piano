@@ -3,9 +3,8 @@ import { PolySynth, start } from "tone";
 const PASSIVE = { passive: true };
 const playingNotes = new Set();
 
-const triggerReleaseCache = new WeakMap();
 function triggerRelease() {
-  this.removeEventListener("pointerout", triggerReleaseCache.get(this));
+  this.removeEventListener("pointerout", triggerRelease);
   getSynth().then(synth => synth.triggerRelease(this.textContent));
   playingNotes.delete(this);
 }
@@ -17,16 +16,9 @@ function triggerAttack() {
       .then(synth => {
         synth.triggerAttack(this.textContent);
         this.focus();
-        this.addEventListener(
-          "pointerout",
-          triggerReleaseCache.get(this),
-          PASSIVE
-        );
+        this.addEventListener("pointerout", triggerRelease, PASSIVE);
       })
       .catch(console.error);
-    if (!triggerReleaseCache.has(this)) {
-      triggerReleaseCache.set(this, triggerRelease.bind(this));
-    }
   }
 }
 
